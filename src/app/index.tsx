@@ -1,36 +1,53 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image_url: string;
+}
 
 export default function HomeScreen() {
+
+  const GITHUB_JSON_URL =
+  "https://raw.githubusercontent.com/napat1124/Napats-Shoes/main/Json02";
+
+const [products, setProducts] = useState<Product[]>([]);
+
+useEffect(() => {
+  fetch(GITHUB_JSON_URL)
+    .then((res) => res.json())
+    .then((data) => setProducts(data))
+    .catch((err) => console.log(err));
+}, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>My Shoe Store</Text>
 
-      <View style={styles.card}>
-        <Image
-          source={require("../../assets/images/Nikke.jpg")}
-          style={styles.image}
-        />
-        <Text style={styles.name}>Nike Air Force 1</Text>
-        <Text style={styles.price}>$120</Text>
-      </View>
+     <FlatList
+  data={products}
+  keyExtractor={(item) => item.id}
+  renderItem={({ item }) => (
+    <View style={styles.card}>
+      <Image
+        source={{ uri: item.image_url }}
+        style={styles.image}
+      />
 
-      <View style={styles.card}>
-        <Image
-          source={require("../../assets/images/Samba.jpg")}
-          style={styles.image}
-        />
-        <Text style={styles.name}>Adidas Samba</Text>
-        <Text style={styles.price}>$110</Text>
-      </View>
+      <Text style={styles.name}>{item.name}</Text>
 
-      <View style={styles.card}>
-        <Image
-          source={require("../../assets/images/Nb550.jpg")}
-          style={styles.image}
-        />
-        <Text style={styles.name}>New Balance 550</Text>
-        <Text style={styles.price}>$130</Text>
-      </View>
+      <Text style={styles.price}>${item.price}</Text>
+    </View>
+  )}
+/>
     </View>
   );
 }
@@ -80,4 +97,6 @@ const styles = StyleSheet.create({
   fontWeight: "bold",
   color: "#0a8f08",
 },
+
+
 });
